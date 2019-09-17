@@ -27,7 +27,7 @@ You will be able to...
 * Mini RS232 MAX3232 Level to TTL Converter 
 * Wireless IR Receiver Module (KY-005)
 * Any IR Remote Controller (the one taken from cheap Android TV would be perfect)
-* DB25 male connector
+* DB25 female plug
 * AMIGAAAAAA!!!
 
 ### Software
@@ -60,7 +60,7 @@ So basically there are two things we need to deal with:
 * signals need to be inverted 
 * voltage needs to be regulated to not harm Arduino serial pins
 
-It looks like the Arduino and Amiga talks with completely different languages. To convert signals from TTL to RS232 standard, we will use MAX3232 chip module. This way Arduino will be able to send data to Amiga serial port, and Amiga will be able to understand the language in which Arduino is talking to her. On the other hand, if Amiga would like to say something to Arduino, she will not immediately smash Arduino’s serial pins (what a tough girl ;). OK, so let’s wire Arduino via MAX3232 module with DB25 male plug.
+It looks like the Arduino and Amiga talks with completely different languages. To convert signals from TTL to RS232 standard, we will use MAX3232 chip module. This way Arduino will be able to send data to Amiga serial port, and Amiga will be able to understand the language in which Arduino is talking to her. On the other hand, if Amiga would like to say something to Arduino, she will not immediately smash Arduino’s serial pins (what a tough girl ;). OK, so let’s wire Arduino via MAX3232 module with DB25 female plug.
 
 ![how it works](./img/scheme.png)
 

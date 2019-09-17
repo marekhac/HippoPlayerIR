@@ -1,5 +1,5 @@
-#HippoPlayerIR
-###Introduction
+# HippoPlayerIR
+### Introduction
 Does anybody need a remote controlled Amiga computer these days? Not at all, so... let’s do it! :). 
 
 In this simple project you will learn how to connect wireless IR receiver with Amiga and how to control HippoPlayer while listening to music modules. If you want to see how it works, take a look at this video:
@@ -8,7 +8,7 @@ In this simple project you will learn how to connect wireless IR receiver with A
 
 Cool, isn’t it ? So let’s take a deep dive into the world of infrared light and... Amiga
 
-###Features
+### Features
 Basically, we end up with wirelessly controlled HippoPlayer using IR remote controller.
 You will be able to...
 
@@ -21,7 +21,7 @@ You will be able to...
 * stop/continue playing module
 * rew/ffwd pattern of the module
 
-###Gathering the parts
+### Gathering the parts
 
 * Arduino Nano ATMEGA328P
 * Mini RS232 MAX3232 Level to TTL Converter 
@@ -30,7 +30,7 @@ You will be able to...
 * DB25 male connector
 * AMIGAAAAAA!!!
 
-###Software
+### Software
 
 * Amiga with OS version 2.0 or higher
 * RexxMast (tested with version 1.15). It’s a good idea to place it in WBStartup
@@ -51,7 +51,7 @@ The "chain reaction" looks like this:
 7. Amiga listening on serial port and waiting for IR Key Code to arrive
 8. When IR Key Code arrive on serial port, Amiga analyze it and run proper ARexx script to perform some specific action on HippoPlayer (fe. play, next, stop ...) 
 
-###Theory and wiring everything up
+### Theory and wiring everything up
 
 The key thing is the connection between Arduino and Amiga. Arduino uses serial communication called TTL, which remain between the limits of 0V and Vcc. A logic high state (1) is represented by 5V or 3.3 V, while a logic low (0) is 0V. On the other hand Amiga had serial port which complies with the RS-232 standard. Logic “high” state (1) is represented by a negative value (between -3 V to -25V), while a logic “low” state (0) by a positive voltage between +3 V to +25 V. On Amiga, it’s a range of signals between -12 V and +12V.
 
@@ -68,7 +68,7 @@ After we setup a healthy partnership between Arduino and Amiga, we need to conne
 
 Generally (from the hardware point of view) this is it. Arduino can be powered by build-in mini-b usb connector or by external power source (connected to +5V and GND). You can now upload...
 
-###Arduino code
+### Arduino code
 
 It’s very simple. We setup digital pin 7 on Arduino as a receiver for IR modulated signals. Then we set serial data transmission speed to 9600 baud, and start to listening for incoming IR codes. When we catch something, we filter it to drop all long pressed key codes (0xFFFFFFFF). At the end we convert IR Key Codes as a HEX value to String and send it with NULL character to Amiga. 
 
@@ -103,7 +103,7 @@ void loop(){
 ```
 >**NOTE:** Please remember to disconnect TX and RX line on Arduino, before uploading the sketch (to avoid upload errors)
 
-###Configuration of Serial Port on Amiga
+### Configuration of Serial Port on Amiga
 
 ![serial prefs](./img/serial_prefs.png)
 
@@ -114,7 +114,7 @@ void loop(){
 * Bits/Char: 8
 * Stop Bits: 1
 
-###Map buttons of remote controler
+### Map buttons of remote controler
 
 HippoPlayer can be controlled using bunch of ARexx scripts. The whole trick is to get IR Key Codes of remote controller buttons and use them to call HippoPlayer actions like: play, next, stop, etc. To make it happened, open **HippoPlayerIR.config** file in your favourite text editor. You will find there a set of labeled actions like: playNext, chooseNext, VolumeUp etc...
 
@@ -186,13 +186,13 @@ You will see all actions and linked IR Key Codes.
 
 ![hippo debug](./img/hippo_debug.png)
 
-###Wirelessly control HippoPlayer
+### Wirelessly control HippoPlayer
 
 Make sure that RexxMast is active (you can place it in WBStartup). Next, execute HippoPlayerIR from the icon, then run HippoPlayer. Add some cool modules to playlist and press the mapped buttons on the remote controller. You should be able to change state of the HippoPlayer. Good job! :)
 
 ![Alt Text](https://media.giphy.com/media/bKBM7H63PIykM/giphy.gif)
 
-###Q&A
+### Q&A
 
 **Q: Am I wired everything properly ?**
 
@@ -206,14 +206,14 @@ A: It might be a problem with the configuration file. Open HippoPlayerIR.exe in 
 
 A: It can mean that HippoPlayer wasn’t executed or ARexx port wasn’t properly initialized (do you run RexxMast first?).
 
-###Thanks
+### Thanks
 
 * **K-P Koljonen** - for creating the best music player for Amiga.
 * **Nils Goers** - for arexx scripts for PlayNext and PlayPrev actions.
 * **Bruno Jennrich** - for his great book called "Advanced System Programmer's Guide for the Amiga". It provide a lot of useful informations about serial communication on Amiga. BTW. I've used some of the Bruno's routines in this project (it's 30 years-old code, but still rocks! :)
 * **Bartłomiej Węgrzyn (Magnetic Fox)** - for late night coding session of HippoPlayerIR @ AmiPartyXXV. 
 
-###License
+### License
 
 HippoPlayerIR source code is available under GPLv3 License. You can use freely any part of this code for your educational purposes. You are definitely not allowed to sell this software. It’s free and open. Current repository contain files made by other persons: `dev_support.c` and `ser_support.c` by Bruno Jennrich, and ARexx scripts by K-P Koljonen and Nils Goers.
 

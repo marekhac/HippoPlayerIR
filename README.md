@@ -141,7 +141,7 @@ To map buttons on your remote controller you have to discover IR Key Codes behin
 HippoPlayerIR.exe -monitor
 `
 
-It will open HippoPlayerIR in IR Key Codes monitor mode. This way you will be able to check what IR Code is assigned to which button on you remote controller. Now, just press any button on remote controller. If you properly wire everything up, you should be able to see IR Key Codes appearing inside the CLI window (of course when you press the buttons on remote controller somewhere within reach of the IR Sensor connected to Arduino). 
+It will open HippoPlayerIR in IR Key Codes monitor mode. This way you will be able to check what IR Code is assigned to which button on your remote controller. Now, just press any button on remote controller. If you properly wire everything up, you should be able to see IR Key Codes appearing inside the CLI window (of course when you press the buttons on remote controller somewhere within reach of the IR Sensor connected to Arduino). 
 
 ![hippo serial monitor](./img/hippo_monitor.png)
 
@@ -204,17 +204,19 @@ A: It might be a problem with the configuration file. Open HippoPlayerIR.exe in 
 
 **Q: Got “Command returned 5/1: Program not found” error**
 
-A: It can mean that HippoPlayer wasn’t executed or ARexx port wasn’t properly initialized (do you run RexxMast first?).
+A: It can mean that HippoPlayer wasn’t executed or ARexx port wasn’t properly initialized (did you run RexxMast first?).
 
 ### Thanks
 
 * **K-P Koljonen** - for creating the best music player for Amiga.
 * **Nils Goers** - for arexx scripts for PlayNext and PlayPrev actions.
-* **Bruno Jennrich** - for his great book called "Advanced System Programmer's Guide for the Amiga". It provide a lot of useful informations about serial communication on Amiga. BTW. I've used some of the Bruno's routines in this project (it's 30 years-old code, but still rocks! :)
+* **Bruno Jennrich** - for his great book called "Advanced System Programmer's Guide for the Amiga". It gave me a lot of useful informations about serial communication on Amiga. BTW. I've used some of the Bruno's routines in this project (it's 30 years-old code, but it still rocks! :)
 * **Bartłomiej Węgrzyn (Magnetic Fox)** - for late night coding session of HippoPlayerIR @ AmiPartyXXV. 
 
 ### License
 
 HippoPlayerIR source code is available under GPLv3 License. You can use freely any part of this code for your educational purposes. You are definitely not allowed to sell this software. It’s free and open. Current repository contain files made by other persons: `dev_support.c` and `ser_support.c` by Bruno Jennrich, and ARexx scripts by K-P Koljonen and Nils Goers.
 
+### Warning
 
+I take no responsibilities for any kind of damage to your Amiga, Arduino or any other part of circuit. **You make it all on your own risk!**

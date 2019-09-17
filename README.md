@@ -37,7 +37,7 @@ You will be able to...
 * HippoPlayer (tested with latest version 2.45)
 * HippoPlayerIR
 
-###How it works
+### How it works
 The "chain reaction" looks like this:
 
 ![how it works](./img/how_it_works.png)

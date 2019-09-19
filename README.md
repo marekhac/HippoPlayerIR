@@ -109,7 +109,7 @@ void loop(){
 
 * Baud Rate: 9600
 * Buffer Size: 512
-* Handshaking: RTS/CTS
+* Handshaking: None
 * Parity: None
 * Bits/Char: 8
 * Stop Bits: 1

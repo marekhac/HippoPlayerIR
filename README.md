@@ -103,17 +103,6 @@ void loop(){
 ```
 >**NOTE:** Please remember to disconnect TX and RX line on Arduino, before uploading the sketch (to avoid upload errors)
 
-### Configuration of Serial Port on Amiga
-
-![serial prefs](./img/serial_prefs.png)
-
-* Baud Rate: 9600
-* Buffer Size: 512
-* Handshaking: None
-* Parity: None
-* Bits/Char: 8
-* Stop Bits: 1
-
 ### Map buttons of remote controler
 
 HippoPlayer can be controlled using bunch of ARexx scripts. The whole trick is to get IR Key Codes of remote controller buttons and use them to call HippoPlayer actions like: play, next, stop, etc. To make it happened, open **HippoPlayerIR.config** file in your favourite text editor. You will find there a set of labeled actions like: playNext, chooseNext, VolumeUp etc...
@@ -212,7 +201,8 @@ A: It can mean that HippoPlayer wasn’t executed or ARexx port wasn’t properl
 * **Nils Goers** - for arexx scripts for PlayNext and PlayPrev actions.
 * **Bruno Jennrich** - for his great book called "Advanced System Programmer's Guide for the Amiga". It gave me a lot of useful informations about serial communication on Amiga. BTW. I've used some of the Bruno's routines in this project (it's 30 years-old code, but it still rocks! :)
 * **Bartłomiej Węgrzyn (Magnetic Fox)** - for late night coding session of HippoPlayerIR @ AmiPartyXXV. 
-
+* **Michał Żukowski (Rzookol)** - for tips about proper serial port setup
+ 
 ### License
 
 HippoPlayerIR source code is available under GPLv3 License. You can use freely any part of this code for your educational purposes. You are definitely not allowed to sell this software. It’s free and open. Current repository contain files made by other persons: `dev_support.c` and `ser_support.c` by Bruno Jennrich, and ARexx scripts by K-P Koljonen and Nils Goers.

@@ -31,6 +31,14 @@ struct IOExtSer *SerReq;
 #define VOLUME_MAX 64
 #define VOLUME_MIN 0
 
+// serial port params
+
+#define INPUT_BUFFER_SIZE 512
+#define READ_LENGTH 8
+#define WRITE_LENGTH 8
+#define STOP_BITS 1
+#define BAUD_RATE 9600 //  number of bits transferred per second
+
 // custom printfs
 
 #define DEBUG_PRINT(...) if (debugMode) { printf(__VA_ARGS__); }
@@ -78,6 +86,7 @@ void actionStopContinue();
 void actionJumpOnPlaylist(ULONG, enum JumpDirection);
 ULONG loadConfiguration(struct Action*);
 LONG doCommand(UBYTE *command, BPTR other);
+void setupCustomSerialParams();
 
 // global variables
 
@@ -133,6 +142,8 @@ int main(UWORD argc, char* argv[])
     }
 
     Open_A_Device ("serial.device", 0L, &SerReq, 0L, SER_LEN);
+
+    setupCustomSerialParams();
 
     while (!CheckSignal(SIGBREAKF_CTRL_D))
     {
@@ -193,7 +204,7 @@ void processCommandLineArgs(UWORD argc, char* argv[])
 
 void displayHeaderInfo()
 {
-    printf("\nHippoPlayerIR Version 1.0\n");
+    printf("\nHippoPlayerIR Version 1.1\n");
     printf("Copyright © 2019 by MARXSOFT Marek Hac\n");
     printf("http://github.com/marekhac\n\n");
 }
@@ -212,6 +223,28 @@ LONG doCommand(UBYTE *command, BPTR other)
     stags[3].ti_Data = 0;
 
     return(SystemTagList(command, stags));
+}
+
+void setupCustomSerialParams()
+{
+    // update I/O request
+
+    SerReq->io_RBufLen = INPUT_BUFFER_SIZE;
+    SerReq->io_Baud = BAUD_RATE;
+    SerReq->io_ReadLen = READ_LENGTH;
+    SerReq->io_WriteLen = WRITE_LENGTH;
+    SerReq->io_StopBits = STOP_BITS;
+    SerReq->io_SerFlags &= ~SERF_PARTY_ON; // set parity off
+    SerReq->io_SerFlags |= SERF_XDISABLED; // set xON/xOFF disabled
+
+    // update serial parameters using SDCMD_SETPARAMS command
+
+    SerReq->IOSer.io_Command = SDCMD_SETPARAMS;
+
+    if (DoIO(SerReq))
+    {
+        printf("Error setting serial parameters!\n");
+    }
 }
 
 void createActionNamesArray(UBYTE* actionNames[])
@@ -267,7 +300,7 @@ ULONG loadConfiguration(struct Action *actions)
     createActionNamesArray(actionNames);
 
     DEBUG_PRINT("-------------------------\n");
-    DEBUG_PRINT("  Actons configuration:\n");
+    DEBUG_PRINT("  Actions configuration:\n");
     DEBUG_PRINT("-------------------------\n");
 
     while (fgets(string, MAX_STRING, fp) != NULL)

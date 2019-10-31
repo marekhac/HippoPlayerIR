@@ -1,4 +1,6 @@
 # HippoPlayerIR
+<sub>Copyright © 2019 by MARXSOFT Marek Hać</sub>
+
 ### Introduction
 Does anybody need a remote controlled Amiga computer these days? Not at all, so... let’s do it! :). 
 
@@ -185,7 +187,7 @@ Make sure that RexxMast is active (you can place it in WBStartup). Next, execute
 
 **Q: Am I wired everything properly ?**
 
-A: I hope so :). I would recommend to test the circuit correctness with the Term application on Amiga. This way you will check if anything arriving on serial port when you press the buttons.
+A: I hope so :). I would recommend to test the circuit correctness with the [Term](http://aminet.net/comm/term/Term.lha) application on Amiga. This way you will check if anything arriving on serial port when you press the buttons.
 
 **Q: After running HippoPlayerIR nothing happens, what’s wrong?**
 

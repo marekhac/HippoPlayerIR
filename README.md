@@ -28,7 +28,7 @@ You will be able to...
 * Arduino Nano ATMEGA328P
 * Mini RS232 MAX3232 Level to TTL Converter 
 * Wireless IR Receiver Module (KY-005)
-* Any IR Remote Controller (the one taken from cheap Android TV would be perfect)
+* IR Remote Controller (the one taken from cheap Android TV would be perfect)
 * DB25 female plug
 * AMIGAAAAAA!!!
 
@@ -193,6 +193,14 @@ A: I hope so :). I would recommend to test the circuit correctness with the [Ter
 
 A: It might be a problem with the configuration file. Open HippoPlayerIR.exe in debug mode (-debug flag) and check whether IR Key Codes are assigned to ARexx actions.
 
+**Q: My remote controller sends very long IR code when I press the key on remote controller**
+
+A: Not all remote controllers works with cheap Wireless IR Receiver Module for Arduino. Just check another one. Most of them should work (including cheap LED Strip remote controllers).
+
+**Q: LED diode on Arduino board doesn't flash when I press the key on remote controller**
+
+A: Check if you wire up properly the Arduino and Wireless IR Receiver Module. Check if it's properly powered up (with +5V from Arduino). It also can be damaged, so replace it with another one.
+
 **Q: Got “Command returned 5/1: Program not found” error**
 
 A: It can mean that HippoPlayer wasn’t executed or ARexx port wasn’t properly initialized (did you run RexxMast first?).
@@ -204,6 +212,7 @@ A: It can mean that HippoPlayer wasn’t executed or ARexx port wasn’t properl
 * **Bruno Jennrich** - for his great book called "Advanced System Programmer's Guide for the Amiga". It gave me a lot of useful informations about serial communication on Amiga. BTW. I've used some of the Bruno's routines in this project (it's 30 years-old code, but it still rocks! :)
 * **Bartłomiej Węgrzyn (Magnetic Fox)** - for late night coding session of HippoPlayerIR @ AmiPartyXXV. 
 * **Michał Żukowski (Rzookol)** - for tips about proper serial port setup
+* **Mingo12** - for notes about remote controllers compatibility and issues with Wireless IR Receiver Module.
  
 ### License
 

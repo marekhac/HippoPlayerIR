@@ -87,6 +87,7 @@ void actionJumpOnPlaylist(ULONG, enum JumpDirection);
 ULONG loadConfiguration(struct Action*);
 LONG doCommand(UBYTE *command, BPTR other);
 void setupCustomSerialParams();
+UBYTE* concat(const UBYTE *s1, const UBYTE *s2);
 
 // global variables
 
@@ -95,6 +96,7 @@ BOOL irCodesMonitor = FALSE;
 LONG choosedModuleNumber = 1;
 LONG volume = 64;
 BOOL isMuted = FALSE; // stop or continue
+UBYTE *commandPrefix = "rx arexx/";
 
 void CloseIt(char *String)
 {
@@ -204,7 +206,7 @@ void processCommandLineArgs(UWORD argc, char* argv[])
 
 void displayHeaderInfo()
 {
-    printf("\nHippoPlayerIR Version 1.1\n");
+    printf("\nHippoPlayerIR Version 1.2\n");
     printf("Copyright © 2019 by MARXSOFT Marek Hac\n");
     printf("http://github.com/marekhac\n\n");
 }
@@ -284,7 +286,7 @@ ULONG loadConfiguration(struct Action *actions)
 {
     FILE *fp;
     UBYTE string[MAX_STRING];
-    UBYTE *filename = "HippoPlayerIR.config";
+    UBYTE *filename = "PROGDIR:HippoPlayerIR.config";
     UBYTE *item;
     UBYTE *actionNames[NUM_OF_ACTIONS];
     ULONG i = 0;
@@ -333,12 +335,13 @@ ULONG loadConfiguration(struct Action *actions)
 
 void runScriptForType(enum ActionType type)
 {
-    UBYTE *commandPlayNext = "rx arexx/PlayNext.hip";
-    UBYTE *commandPlayPrev = "rx arexx/PlayPrev.hip";
-    UBYTE *commandShowSamples = "rx arexx/showsamples.hip";
-    UBYTE *commandPlaySelected = "rx arexx/play2.hip";
-    UBYTE *commandRewPattern = "rx arexx/rew.hip";
-    UBYTE *commandFfwdPattern = "rx arexx/ffwd.hip";
+	 UBYTE *command;
+    UBYTE *playNextScript = "PlayNext.hip";
+    UBYTE *playPrevScript = "PlayPrev.hip";
+    UBYTE *showSamplesScript = "showsamples.hip";
+    UBYTE *playSelectedScript = "play2.hip";
+    UBYTE *rewPatternScript = "rew.hip";
+    UBYTE *ffwdPatternScript = "ffwd.hip";
     ULONG result;
 
     switch(type)
@@ -371,26 +374,30 @@ void runScriptForType(enum ActionType type)
         {
             ACTION_MSG("Play next module");
             choosedModuleNumber += 1;
-            result = doCommand(commandPlayNext,NULL);
+            command = concat(commandPrefix, playNextScript);
+            result = doCommand(command,NULL);
             break;
         }
         case PLAY_PREV:
         {
             ACTION_MSG("Play previous module");
             choosedModuleNumber -= 1;
-            result = doCommand(commandPlayPrev,NULL);
+            command = concat(commandPrefix, playPrevScript);
+            result = doCommand(command,NULL);
             break;
         }
         case SHOW_SAMPLES:
         {
             ACTION_MSG("Show/hide samples window");
-            result = doCommand(commandShowSamples,NULL);
+            command = concat(commandPrefix, showSamplesScript);
+            result = doCommand(command,NULL);
             break;
         }
         case PLAY_SELECTED:
         {
             ACTION_MSG("Play selected module");
-            result = doCommand(commandPlaySelected,NULL);
+            command = concat(commandPrefix, playSelectedScript);
+            result = doCommand(command,NULL);
             break;
         }
         case STOP_CONTINUE:
@@ -401,13 +408,15 @@ void runScriptForType(enum ActionType type)
         case REW_PATTERN:
         {
             ACTION_MSG("REW pattern");
-            result = doCommand(commandRewPattern,NULL);
+            command = concat(commandPrefix, rewPatternScript);
+            result = doCommand(command,NULL);
             break;
         }
         case FFWD_PATTERN:
         {
             ACTION_MSG("FFWD pattern");
-            result = doCommand(commandFfwdPattern,NULL);
+            command = concat(commandPrefix, ffwdPatternScript);
+            result = doCommand(command,NULL);
             break;
         }
         case QUIT:
@@ -434,7 +443,9 @@ void runScriptForType(enum ActionType type)
 
 void actionVolumeChange(enum ActionType type)
 {
-    UBYTE charVolume[MAX_COMMAND_LENGTH];
+	 UBYTE *command;
+	 UBYTE *scriptFileName = "volume.hip";
+    UBYTE commandWithArgs[MAX_COMMAND_LENGTH];
     LONG result;
 
     // volume down
@@ -461,34 +472,40 @@ void actionVolumeChange(enum ActionType type)
         }
     }
 
-    sprintf(charVolume, "rx arexx/volume.hip %d", volume);
+	 command = concat(commandPrefix, scriptFileName);
+    sprintf(commandWithArgs, "%s %d", command, volume);
 
-    result = doCommand(charVolume, NULL);
+    result = doCommand(commandWithArgs, NULL);
 }
 
 void actionStopContinue()
 {
-    UBYTE *commandStopPlaying = "rx arexx/stop.hip";
-    UBYTE *commandContinuePlaying = "rx arexx/cont.hip";
+	 UBYTE *command;
+    UBYTE *stopScript = "stop.hip";
+    UBYTE *continueScript = "cont.hip";
     LONG result;
 
     if (isMuted == FALSE)
     {
         ACTION_MSG("Stop playing module");
-        result = doCommand(commandStopPlaying,NULL);
+        command = concat(commandPrefix, stopScript);
         isMuted = TRUE;
     }
     else
     {
         ACTION_MSG("Continue playing module");
-        result = doCommand(commandContinuePlaying,NULL);
+        command = concat(commandPrefix, continueScript);
         isMuted = FALSE;
     }
+
+    result = doCommand(command,NULL);
 }
 
 void actionJumpOnPlaylist(ULONG number, enum JumpDirection direction)
 {
-    UBYTE charChoosedModule[MAX_COMMAND_LENGTH];
+	 UBYTE *command;
+	 UBYTE *chooseScript = "choose.hip";
+    UBYTE commandWithArgs[MAX_COMMAND_LENGTH];
     LONG result;
 
     // jump forward
@@ -510,7 +527,17 @@ void actionJumpOnPlaylist(ULONG number, enum JumpDirection direction)
         }
     }
 
-    sprintf(charChoosedModule, "rx arexx/choose.hip %d", choosedModuleNumber);
+	 command = concat(commandPrefix, chooseScript);
+    sprintf(commandWithArgs, "%s %d", command, choosedModuleNumber);
+    result = doCommand(commandWithArgs, NULL);
+}
 
-    result = doCommand(charChoosedModule, NULL);
+UBYTE* concat(const UBYTE *string1, const UBYTE *string2)
+{
+	UBYTE *result = (UBYTE *) malloc(strlen(string1) + strlen(string2) + 1);
+
+	strcpy(result, string1);
+	strcat(result, string2);
+
+	return result;
 }

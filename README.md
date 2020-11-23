@@ -1,12 +1,12 @@
 # HippoPlayerIR
-<sub>Copyright © 2019 by MARXSOFT Marek Hać</sub>
+<sub>Copyright © 2020 by MARXSOFT Marek Hać</sub>
 
 ### Introduction
 Does anybody need a remote controlled Amiga computer these days? Not at all, so... let’s do it! :). 
 
 In this simple project you will learn how to connect wireless IR receiver with Amiga and how to control HippoPlayer while listening to music modules. If you want to see how it works, take a look at this video:
 
-[![video](http://img.youtube.com/vi/R4ydfs7XyGg/0.jpg)](http://www.youtube.com/watch?v=R4ydfs7XyGg)
+[![video](./img/hippo_video.jpg)](http://www.youtube.com/watch?v=R4ydfs7XyGg)
 
 Cool, isn’t it ? So let’s take a deep dive into the world of infrared light and... Amiga
 
@@ -22,12 +22,13 @@ You will be able to...
 * show/hide sample window
 * stop/continue playing module
 * rew/ffwd pattern of the module
+* <span style="color:red">NEW!</span> copy selected module to LikedMods: volume
 
 ### Gathering the parts
 
 * Arduino Nano ATMEGA328P
 * Mini RS232 MAX3232 Level to TTL Converter 
-* Wireless IR Receiver Module (KY-005)
+* Wireless IR Receiver Module (KY-022)
 * IR Remote Controller (the one taken from cheap Android TV would be perfect)
 * DB25 female plug
 * AMIGAAAAAA!!!
@@ -73,6 +74,8 @@ Generally (from the hardware point of view) this is it. Arduino can be powered b
 ### Arduino code
 
 It’s very simple. We setup digital pin 7 on Arduino as a receiver for IR modulated signals. Then we set serial data transmission speed to 9600 baud, and start to listening for incoming IR codes. When we catch something, we filter it to drop all long pressed key codes (0xFFFFFFFF). At the end we convert IR Key Codes as a HEX value to String and send it with NULL character to Amiga. 
+
+Please make sure that you have already installed the **IRRemote** library in your Arduino IDE. If not, just add it via Library Manager.
 
 >**NOTE:** String termination (0x0) is important, because Amiga will didn’t know when to stop fetching data from serial port.
 
@@ -125,6 +128,7 @@ Here is a quick overview of all possible actions that can be performed on HippoP
 * **rewPattern** - play previous pattern of the module 
 * **ffwdPattern** - play next pattern of the module
 * **quitProgram** - quit the HippoPlayerIR and stop listening for IRCodes on serial port 
+* **copyToLikedMods** - copy selected module to LikedMods: volume. LikedMods is just an assign to a directory in which you can store your favourite modules
 
 To map buttons on your remote controller you have to discover IR Key Codes behind them. I assume that you already have wired everything up, and the Arduino is successfully programmed. Now, connect Arduino to the Amiga using DB25 plug. Power on the Arduino (order matters!). Power on your Amiga, open CLI window and execute HippoPlayerIR with **-monitor** option.
 
@@ -136,15 +140,15 @@ It will open HippoPlayerIR in IR Key Codes monitor mode. This way you will be ab
 
 ![hippo serial monitor](./img/hippo_monitor.png)
 
-To quit HippoPlayerIR press **Ctrl+D** on keyboard, then press any button on remote controller. This way we will fetch data from serial port and safely close it.
+To quit HippoPlayerIR press **Ctrl+D** on keyboard.
 
 Next, go back to the **HippoPlayerIR.config** opened in the text editor, and assign the IR Code Key to desired action. It might look like this:
 
 ![configuration](./img/ircode_config.png)
 
-Not all actions need to be defined inside the config file. It’s up to you, how many actions you want to map on your remote controller. But I recommend to map at least “quitProgram” action to easily quit HippoPlayerIR with remote controller.
+Not all actions need to be defined inside the config file. It’s up to you, how many actions you want to map on your remote controller.
 
-A proper configuration might look like this:
+A proper configuration might look like this (you can find it in **example_config** directory):
 
 ```
 volumeDown:807f2fd0
@@ -162,6 +166,7 @@ stopContinue:807f827d
 rewPattern:807f8a75
 ffwdPattern:807f0af5
 quitProgram:807f02fd
+copyToLikedMods:807f8f70
 ```
 
 Save **HippoPlayerIR.config** and we are good to go. To verify configuration open HippoPlayerIR in debug mode (with option **-debug**)
@@ -172,7 +177,6 @@ HippoPlayerIR.exe -debug
 
 You will see all actions and linked IR Key Codes.
 >**NOTE:** Unassigned actions will be visible with (null) codes.
-
 
 
 ![hippo debug](./img/hippo_debug.png)
@@ -209,14 +213,14 @@ A: It can mean that HippoPlayer wasn’t executed or ARexx port wasn’t properl
 
 * **K-P Koljonen** - for creating the best music player for Amiga.
 * **Nils Goers** - for arexx scripts for PlayNext and PlayPrev actions.
-* **Bruno Jennrich** - for his great book called "Advanced System Programmer's Guide for the Amiga". It gave me a lot of useful informations about serial communication on Amiga. BTW. I've used some of the Bruno's routines in this project (it's 30 years-old code, but it still rocks! :)
+* **Bruno Jennrich** - for his great book called "Advanced System Programmer's Guide for the Amiga". It gave me a lot of useful informations about serial communication on Amiga.
 * **Bartłomiej Węgrzyn (Magnetic Fox)** - for late night coding session of HippoPlayerIR @ AmiPartyXXV. 
 * **Michał Żukowski (Rzookol)** - for tips about proper serial port setup
 * **Mingo12** - for notes about remote controllers compatibility and issues with Wireless IR Receiver Module.
  
 ### License
 
-HippoPlayerIR source code is available under GPLv3 License. You can use freely any part of this code for your educational purposes. You are definitely not allowed to sell this software. It’s free and open. Current repository contain files made by other persons: `dev_support.c` and `ser_support.c` by Bruno Jennrich, and ARexx scripts by K-P Koljonen and Nils Goers.
+HippoPlayerIR source code is available under GPLv3 License. You can use freely any part of this code for your educational purposes. You are definitely not allowed to sell this software. It’s free and open. Current repository contain files made by other persons: ARexx scripts by K-P Koljonen and Nils Goers.
 
 ### Warning
 

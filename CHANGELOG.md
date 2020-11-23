@@ -1,5 +1,11 @@
 # Changelog
 
+### [1.3] - 2020-11-22
+#### Added
+- Async serial port communication
+- "Copy to LikedMods" command - copy selected module to a directory with favourite modules.
+- Installer (can be used to update HippoPlayerIR)
+
 ### [1.2] - 2020-11-11 
 #### Added
 - Improve way of calling rx scripts

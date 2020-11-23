@@ -1,8 +1,9 @@
 //
 //  HippoPlayerIR
 //
-//  Created by Marek Hac on 28/08/2019.
-//  Copyright © 2019 MARXSOFT Marek Hac. All rights reserved.
+//  Created by Marek Hac on 21/11/2020.
+//  Copyright © 2020 MARXSOFT Marek Hac. All rights reserved.
+//  https://github.com/marekhac
 //
 //  Compile info:
 //  gcc HippoPlayerIR.c
@@ -10,21 +11,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <exec/libraries.h>
+#include <exec/devices.h>
+#include <exec/io.h>
+#include <exec/types.h>
 #include <dos/dos.h>
 #include <dos/dostags.h>
+#include <devices/serial.h>
 #include <intuition/intuition.h>
-#include "exec/types.h"
-#include "exec/io.h"
-#include "devices/serial.h"
-#include "includes/dev_support.c"
-#include "includes/ser_support.c"
 
-struct IOExtSer *SerReq;
-#define SER_LEN (ULONG) sizeof (struct IOExtSer)
+struct IOExtSer *SerialIO;   /* pointer to I/O request */
+struct MsgPort *SerialMP;   /* pointer to Message Port*/
 
-#define MAX_STRING 256
+#define BUFFER_SIZE 32
 #define MAX_COMMAND_LENGTH 32
-#define NUM_OF_ACTIONS 15
+#define NUM_OF_ACTIONS 16
 #define FAIL_TO_LOAD_CONFIG 1
 
 #define VOLUME_STEP 4
@@ -47,6 +47,10 @@ struct IOExtSer *SerReq;
 
 #define ACTION_MSG(msg) printf("\r\33[2KACTION: %s",msg); fflush(stdout);
 
+// version
+
+static UBYTE *version = "$VER: HippoPlayerIR 1.3";
+
 // enums
 
 enum ActionType {
@@ -63,75 +67,50 @@ enum ActionType {
     FFWD_PATTERN,
     JUMP_10_MODS_FORWARD,
     JUMP_10_MODS_BACKWARDS,
+    COPY_TO_LIKEDMODS,
     QUIT
 };
 
 enum JumpDirection {
-	FORWARD,
-	BACKWARDS
+	 FORWARD,
+	 BACKWARDS
 };
 
 struct Action {
     enum ActionType type;
-    char irCode[MAX_STRING];
+    char irCode[BUFFER_SIZE];
 };
 
 // methods declaration
 
 void processCommandLineArgs(UWORD, char**);
 void displayHeaderInfo();
+void printQuitMessage();
 void runScriptForType(enum ActionType);
 void actionVolumeChange(enum ActionType);
 void actionStopContinue();
 void actionJumpOnPlaylist(ULONG, enum JumpDirection);
+void setupCustomSerialParams();
+void setupReadCommand();
 ULONG loadConfiguration(struct Action*);
 LONG doCommand(UBYTE *command, BPTR other);
-void setupCustomSerialParams();
 UBYTE* concat(const UBYTE *s1, const UBYTE *s2);
 
 // global variables
 
 BOOL debugMode = FALSE;
 BOOL irCodesMonitor = FALSE;
+BOOL isMuted = FALSE; // stop or continue
 LONG choosedModuleNumber = 1;
 LONG volume = 64;
-BOOL isMuted = FALSE; // stop or continue
+BYTE serialReadBuffer[BUFFER_SIZE]; // reserve 32 bytes storage
 UBYTE *commandPrefix = "rx arexx/";
-
-void CloseIt(char *String)
-{
-    UWORD Error = 0;
-    UWORD i;
-    UWORD *dff180 = (UWORD *) 0xdff180; /* background color registry */
-
-    if (strlen(String) > 0)
-    {
-        for (i=0; i<0xffff; i++)
-        {
-            *dff180 = i; /* blink background */
-        }
-
-        puts(String);
-        Error = 10;
-    }
-
-    if (SerReq != 0L)
-    {
-        /* when error occurs all opened devices will be released */
-
-        Close_A_Device (SerReq);
-    }
-
-    exit(Error);
-}
 
 int main(UWORD argc, char* argv[])
 {
     ULONG i = 0;
-    ULONG argNumber = 0;
-    ULONG result = 1;
+    ULONG signal;
 
-    BYTE Buffer[MAX_STRING];
     struct Action actions[NUM_OF_ACTIONS];
 
     displayHeaderInfo();
@@ -143,36 +122,95 @@ int main(UWORD argc, char* argv[])
         return 0;
     }
 
-    Open_A_Device ("serial.device", 0L, &SerReq, 0L, SER_LEN);
+    /* create message port for I/O request */
 
-    setupCustomSerialParams();
-
-    while (!CheckSignal(SIGBREAKF_CTRL_D))
+    if (SerialMP = (struct MsgPort *)CreatePort(0,0))
     {
-        Serial_Read (SerReq, Buffer, -1);
+        /* create I/O request */
 
-        for (i = 0; i < NUM_OF_ACTIONS; i++)
+        if (SerialIO = (struct IOExtSer *)CreateExtIO(SerialMP,sizeof(struct IOExtSer)))
         {
-            if (strcmp(actions[i].irCode, Buffer) == 0)
+            if (OpenDevice(SERIALNAME,0L,SerialIO,0) )
             {
-                runScriptForType(actions[i].type);
-                break;
+                printf("%s did not open\n",SERIALNAME);
             }
-        }
+            else
+            {
+                setupCustomSerialParams();
+                setupReadCommand();
 
-        if (actions[i].type == QUIT)
-        {
-            break; // finish the while loop
-        }
+                SendIO(SerialIO);
 
-        if (irCodesMonitor)
+                do
+                {
+                    signal = Wait(1L << SerialMP -> mp_SigBit | SIGBREAKF_CTRL_D);
+
+                    if (CheckIO(SerialIO) ) /* If request is complete... */
+                    {
+                        /* wait for specific I/O request */
+
+                        WaitIO(SerialIO);
+
+                        /* handle received ir code */
+
+                        for (i = 0; i < NUM_OF_ACTIONS; i++)
+                        {
+                            if (strcmp(actions[i].irCode, serialReadBuffer) == 0)
+                            {
+                                runScriptForType(actions[i].type);
+                                break;
+                            }
+                        }
+
+                        if (actions[i].type == QUIT)
+                        {
+                            break;
+                        }
+
+                        if (irCodesMonitor)
+                        {
+                            printf(" - Button IR Code: %s\n", serialReadBuffer);
+                        }
+
+                        SendIO(SerialIO); /* restart I/O request */
+                    }
+                }
+                while (!(signal & SIGBREAKF_CTRL_D));
+
+                AbortIO(SerialIO);  /* ask device to abort request, if pending */
+                WaitIO(SerialIO);   /* wait for abort, then clean up */
+                CloseDevice(SerialIO); /* close serial device */
+
+                printQuitMessage();
+            }
+
+            DeleteExtIO(SerialIO); /* delete I/O request */
+        }
+        else
         {
-            printf(" - Button IR Code: %s\n", Buffer);
+            printf("Unable to create IORequest\n");
+            DeletePort(SerialMP); /* delete message port */
         }
     }
+    else
+    {
+        printf("Unable to create message port\n");
+    }
 
-    Close_A_Device(SerReq);
     return 0;
+}
+
+
+void displayHeaderInfo()
+{
+    printf("\nHippoPlayerIR Version 1.3\n");
+    printf("Copyright © 2020 by MARXSOFT Marek Hac\n");
+    printf("Press CTRL-D to exit\n\n");
+}
+
+void printQuitMessage()
+{
+	 ACTION_MSG("Quit Program\nThanks for using HippoPlayerIR :)\n\n");
 }
 
 void processCommandLineArgs(UWORD argc, char* argv[])
@@ -204,11 +242,35 @@ void processCommandLineArgs(UWORD argc, char* argv[])
     }
 }
 
-void displayHeaderInfo()
+/* --- Serial device configuration --- */
+
+void setupReadCommand()
 {
-    printf("\nHippoPlayerIR Version 1.2\n");
-    printf("Copyright © 2019 by MARXSOFT Marek Hac\n");
-    printf("http://github.com/marekhac\n\n");
+    SerialIO->IOSer.io_Command = CMD_READ;
+    SerialIO->IOSer.io_Length = -1;
+    SerialIO->IOSer.io_Data = &serialReadBuffer;
+}
+
+void setupCustomSerialParams()
+{
+    // update I/O request
+
+    SerialIO->io_RBufLen = INPUT_BUFFER_SIZE;
+    SerialIO->io_Baud = BAUD_RATE;
+    SerialIO->io_ReadLen = READ_LENGTH;
+    SerialIO->io_WriteLen = WRITE_LENGTH;
+    SerialIO->io_StopBits = STOP_BITS;
+    SerialIO->io_SerFlags &= ~SERF_PARTY_ON; // set parity off
+    SerialIO->io_SerFlags |= SERF_XDISABLED; // set xON/xOFF disabled
+
+    // update serial parameters using SDCMD_SETPARAMS command
+
+    SerialIO->IOSer.io_Command = SDCMD_SETPARAMS;
+
+    if (DoIO(SerialIO))
+    {
+        printf("Error setting serial parameters!\n");
+    }
 }
 
 LONG doCommand(UBYTE *command, BPTR other)
@@ -227,28 +289,6 @@ LONG doCommand(UBYTE *command, BPTR other)
     return(SystemTagList(command, stags));
 }
 
-void setupCustomSerialParams()
-{
-    // update I/O request
-
-    SerReq->io_RBufLen = INPUT_BUFFER_SIZE;
-    SerReq->io_Baud = BAUD_RATE;
-    SerReq->io_ReadLen = READ_LENGTH;
-    SerReq->io_WriteLen = WRITE_LENGTH;
-    SerReq->io_StopBits = STOP_BITS;
-    SerReq->io_SerFlags &= ~SERF_PARTY_ON; // set parity off
-    SerReq->io_SerFlags |= SERF_XDISABLED; // set xON/xOFF disabled
-
-    // update serial parameters using SDCMD_SETPARAMS command
-
-    SerReq->IOSer.io_Command = SDCMD_SETPARAMS;
-
-    if (DoIO(SerReq))
-    {
-        printf("Error setting serial parameters!\n");
-    }
-}
-
 void createActionNamesArray(UBYTE* actionNames[])
 {
     actionNames[VOL_DOWN_ACTION] = "volumeDown";
@@ -265,6 +305,7 @@ void createActionNamesArray(UBYTE* actionNames[])
     actionNames[FFWD_PATTERN] = "ffwdPattern";
     actionNames[JUMP_10_MODS_FORWARD] = "10ModsForward";
     actionNames[JUMP_10_MODS_BACKWARDS] = "10ModsBackwards";
+    actionNames[COPY_TO_LIKEDMODS] = "copyToLikedMods";
 }
 
 enum ActionType getActionType(UBYTE *name, UBYTE* actionNames[])
@@ -285,7 +326,7 @@ enum ActionType getActionType(UBYTE *name, UBYTE* actionNames[])
 ULONG loadConfiguration(struct Action *actions)
 {
     FILE *fp;
-    UBYTE string[MAX_STRING];
+    UBYTE string[BUFFER_SIZE];
     UBYTE *filename = "PROGDIR:HippoPlayerIR.config";
     UBYTE *item;
     UBYTE *actionNames[NUM_OF_ACTIONS];
@@ -305,7 +346,7 @@ ULONG loadConfiguration(struct Action *actions)
     DEBUG_PRINT("  Actions configuration:\n");
     DEBUG_PRINT("-------------------------\n");
 
-    while (fgets(string, MAX_STRING, fp) != NULL)
+    while (fgets(string, BUFFER_SIZE, fp) != NULL)
     {
         // parse config file
 
@@ -335,13 +376,14 @@ ULONG loadConfiguration(struct Action *actions)
 
 void runScriptForType(enum ActionType type)
 {
-	 UBYTE *command;
+    UBYTE *command;
     UBYTE *playNextScript = "PlayNext.hip";
     UBYTE *playPrevScript = "PlayPrev.hip";
     UBYTE *showSamplesScript = "showsamples.hip";
     UBYTE *playSelectedScript = "play2.hip";
     UBYTE *rewPatternScript = "rew.hip";
     UBYTE *ffwdPatternScript = "ffwd.hip";
+    UBYTE *copyToLikedModsScript = "copyfile.hip";
     ULONG result;
 
     switch(type)
@@ -421,7 +463,6 @@ void runScriptForType(enum ActionType type)
         }
         case QUIT:
         {
-            ACTION_MSG("Quit Program\nThanks for using HippoPlayerIR :)\n\n");
             break;
         }
 
@@ -438,13 +479,20 @@ void runScriptForType(enum ActionType type)
 
             break;
         }
+        case COPY_TO_LIKEDMODS:
+        {
+            ACTION_MSG("Copy module to LikedMods: volume")
+            command = concat(commandPrefix, copyToLikedModsScript);
+            result = doCommand(command,NULL);
+            break;
+        }
     }
 }
 
 void actionVolumeChange(enum ActionType type)
 {
-	 UBYTE *command;
-	 UBYTE *scriptFileName = "volume.hip";
+    UBYTE *command;
+    UBYTE *scriptFileName = "volume.hip";
     UBYTE commandWithArgs[MAX_COMMAND_LENGTH];
     LONG result;
 
@@ -472,7 +520,7 @@ void actionVolumeChange(enum ActionType type)
         }
     }
 
-	 command = concat(commandPrefix, scriptFileName);
+    command = concat(commandPrefix, scriptFileName);
     sprintf(commandWithArgs, "%s %d", command, volume);
 
     result = doCommand(commandWithArgs, NULL);
@@ -480,7 +528,7 @@ void actionVolumeChange(enum ActionType type)
 
 void actionStopContinue()
 {
-	 UBYTE *command;
+    UBYTE *command;
     UBYTE *stopScript = "stop.hip";
     UBYTE *continueScript = "cont.hip";
     LONG result;
@@ -503,8 +551,8 @@ void actionStopContinue()
 
 void actionJumpOnPlaylist(ULONG number, enum JumpDirection direction)
 {
-	 UBYTE *command;
-	 UBYTE *chooseScript = "choose.hip";
+    UBYTE *command;
+    UBYTE *chooseScript = "choose.hip";
     UBYTE commandWithArgs[MAX_COMMAND_LENGTH];
     LONG result;
 
@@ -527,17 +575,17 @@ void actionJumpOnPlaylist(ULONG number, enum JumpDirection direction)
         }
     }
 
-	 command = concat(commandPrefix, chooseScript);
+    command = concat(commandPrefix, chooseScript);
     sprintf(commandWithArgs, "%s %d", command, choosedModuleNumber);
     result = doCommand(commandWithArgs, NULL);
 }
 
 UBYTE* concat(const UBYTE *string1, const UBYTE *string2)
 {
-	UBYTE *result = (UBYTE *) malloc(strlen(string1) + strlen(string2) + 1);
+    UBYTE *result = (UBYTE *) malloc(strlen(string1) + strlen(string2) + 1);
 
-	strcpy(result, string1);
-	strcat(result, string2);
+    strcpy(result, string1);
+    strcat(result, string2);
 
-	return result;
+    return result;
 }

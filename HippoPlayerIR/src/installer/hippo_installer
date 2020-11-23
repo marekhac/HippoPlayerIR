@@ -1,0 +1,439 @@
+InstallerGen
+1.5
+24
+1
+11
+Welcome screen
+HippoPlayerIR Installation
+0
+0
+0
+0
+
+
+
+0
+0
+
+0
+0
+2
+1
+Choose installation location
+Please choose a location for installing HippoPlayerIR. A drawer called "HippoPlayerIR" will be automatically created.
+10
+0
+0
+1
+@default-dest
+HippoPlayerIR
+Choose where to install HippoPlayerIR using the controls in the Installer window
+0
+0
+
+0
+0
+3
+5
+Copy the files (without source)
+Copying files...    
+20
+0
+5
+HippoPlayerIR
+
+No
+HippoPlayerIR.exe
+ 
+File
+HippoPlayerIR.info
+ 
+File
+arexx
+ 
+Dir
+example_config
+
+Dir
+1
+@default-dest
+HippoPlayerIR
+
+1
+0
+
+0
+0
+4
+22
+Check if HippoPlayer.config exists
+
+10
+0
+0
+1
+#config
+"HippoPlayerIR.config"
+
+1
+0
+
+0
+0
+5
+9
+if config exists
+
+30
+0
+0
+1
+#config
+"HippoPlayerIR.config"
+
+1
+3
+0
+0
+0
+6
+2
+What to do with existing config
+HippoPlayerIR.config file found. What should we do with it?
+30
+0
+3
+Keep old config file
+#keepit
+No
+Overwrite it with new config file
+#overwrite
+No
+Make a backup of old config file and copy new one
+#backup
+Yes
+1
+#options
+HippoPlayerIR
+
+1
+0
+
+1
+0
+7
+22
+Check if HippoPlayer.config exists
+
+10
+0
+0
+1
+#config
+"HippoPlayerIR.config"
+
+1
+0
+
+0
+0
+8
+9
+if config doesnt exists
+
+0
+0
+0
+0
+#config
+
+
+0
+0
+0
+0
+0
+9
+5
+Copy config to dest
+
+10
+0
+1
+HippoPlayerIR.config
+ 
+File
+1
+@default-dest
+HippoPlayerIR
+
+1
+0
+
+1
+0
+10
+9
+if user want to overwrite current config
+
+0
+0
+0
+0
+#overwrite
+
+
+0
+0
+1
+0
+0
+11
+5
+Copy new config
+Copy new config config file
+0
+0
+1
+HippoPlayerIR.config
+ 
+File
+0
+#overwrite
+
+
+1
+0
+1
+1
+0
+12
+9
+if user want to make backup
+
+0
+0
+0
+0
+#backup
+
+
+1
+0
+1
+0
+0
+13
+15
+Rename config file
+make backup
+0
+0
+0
+0
+(tackon @default-dest "HippoPlayerIR.config")
+(tackon @default-dest "HippoPlayerIR.config_old")
+make backup help text
+1
+0
+1
+1
+0
+14
+5
+Copy new config
+Copying new config file
+0
+0
+1
+HippoPlayerIR.config
+ 
+File
+0
+#overwrite
+
+
+1
+0
+1
+1
+0
+15
+3
+Should copy source code ?
+Copy HippoPlayerIR source code ?
+50
+0
+1
+src
+#copysource
+No
+0
+#source
+
+
+1
+0
+1
+0
+0
+16
+9
+Yes - copy source code
+
+0
+0
+0
+0
+#copysource
+
+
+1
+0
+1
+0
+0
+17
+5
+Copying source code
+Copying soure code...
+0
+0
+1
+src
+ 
+Dir
+0
+#copysource
+
+
+1
+0
+1
+1
+0
+18
+22
+Check if LikedMods volume exists
+
+0
+0
+0
+0
+#likedfolder
+"LikedMods:"
+
+1
+0
+1
+0
+0
+19
+9
+if LikedMods folder dosent exists
+
+0
+0
+0
+0
+#likedfolder
+"LikedModules:"
+
+1
+0
+0
+0
+0
+20
+3
+Ask for assign in user-startup
+HippoPlayerIR can store your favourite modules in LikedMods: volume. If you already created a directory for liked modules, we can make a persistent assign to it in user-startup.
+80
+0
+1
+Add LikedMods assign in user-startup
+#addtouserstartup
+Yes
+0
+#likedassignoptions
+"LikedModules:"
+
+1
+0
+0
+1
+0
+21
+9
+if user wants to modify user-startup
+
+0
+0
+0
+0
+#addtouserstartup
+"LikedModules:"
+
+1
+0
+1
+0
+0
+22
+1
+Choose location for LikedMods volume
+Choose location for liked modules
+90
+0
+0
+0
+@default-dest
+
+
+1
+0
+1
+1
+0
+23
+9
+if user want to add assign to user-startup
+
+0
+0
+0
+0
+#addtouserstartup
+LikedMods
+
+1
+0
+1
+0
+0
+24
+12
+Add assign to user startup
+
+0
+0
+0
+0
+@default-dest
+LikedMods:
+
+1
+0
+1
+1
+0
+<<end of steps>>
+HippoPlayerIR
+1.3 (21.11.2020)
+
+Programowanie:Moje/ir/1.3/Install
+PROGDIR
+ram:
+3
+1
+1

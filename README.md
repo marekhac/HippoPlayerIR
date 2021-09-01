@@ -1,5 +1,5 @@
 # HippoPlayerIR
-<sub>Copyright © 2020 by MARXSOFT Marek Hać</sub>
+<sub>Copyright © 2021 by MARXSOFT Marek Hać</sub>
 
 ### Introduction
 Does anybody need a remote controlled Amiga computer these days? Not at all, so... let’s do it! :). 

@@ -387,12 +387,12 @@ void runScriptForType(enum ActionType type)
     UBYTE *volumeUpScript = "volumeUp.HiP";
     UBYTE *volumeDownScript = "volumeDown.HiP";
     ULONG result;
-
+    
     switch(type)
     {
         case VOL_DOWN_ACTION:
         {
-        	   executeArexxScript(volumeDownScript, "Volume down");
+            executeArexxScript(volumeDownScript, "Volume down");
             break;
         }
         case VOL_UP_ACTION:
@@ -402,7 +402,7 @@ void runScriptForType(enum ActionType type)
         }
         case CHOOSE_PREV:
         {
-        		executeArexxScript(choosePrevScript, "Choose previous module");
+            executeArexxScript(choosePrevScript, "Choose previous module");
             break;
         }
         case CHOOSE_NEXT:
@@ -412,52 +412,52 @@ void runScriptForType(enum ActionType type)
         }
         case PLAY_NEXT_ACTION:
         {
-        	 	executeArexxScript(playNextScript, "Play next module");
+            executeArexxScript(playNextScript, "Play next module");
             break;
         }
         case PLAY_PREV:
         {
-        		executeArexxScript(playPrevScript, "Play previous module");
+            executeArexxScript(playPrevScript, "Play previous module");
             break;
         }
         case SHOW_SAMPLES:
         {
-        		executeArexxScript(showSamplesScript, "Show/hide samples window");
+            executeArexxScript(showSamplesScript, "Show/hide samples window");
             break;
         }
         case PLAY_SELECTED:
         {
-        		executeArexxScript(playSelectedScript, "Play selected module");
+            executeArexxScript(playSelectedScript, "Play selected module");
             break;
         }
         case STOP_CONTINUE:
         {
-        		executeArexxScript(pauseScript, "Stop/continue");
+            executeArexxScript(pauseScript, "Stop/continue");
             break;
         }
         case REW_PATTERN:
         {
-        		executeArexxScript(rewPatternScript, "REW pattern");
+            executeArexxScript(rewPatternScript, "REW pattern");
             break;
         }
         case FFWD_PATTERN:
         {
-        		executeArexxScript(ffwdPatternScript, "FFWD pattern");
+            executeArexxScript(ffwdPatternScript, "FFWD pattern");
             break;
         }
         case JUMP_10_MODS_FORWARD:
         {
-        		executeArexxScript(jump10ModsForwardScript, "Jump 10 modules forward");
+            executeArexxScript(jump10ModsForwardScript, "Jump 10 modules forward");
             break;
         }
         case JUMP_10_MODS_BACKWARDS:
         {
-        		executeArexxScript(jump10ModsBackwardsScript, "Jump 10 modules backwards");
+            executeArexxScript(jump10ModsBackwardsScript, "Jump 10 modules backwards");
             break;
         }
         case COPY_TO_LIKEDMODS:
         {
-        		executeArexxScript(copyToLikedModsScript, "Copy module to LikedMods: volume");
+            executeArexxScript(copyToLikedModsScript, "Copy module to LikedMods: volume");
             break;
         }
         case QUIT:
@@ -470,7 +470,7 @@ void runScriptForType(enum ActionType type)
 UBYTE* concat(const UBYTE *string1, const UBYTE *string2)
 {
     UBYTE *result = (UBYTE *) malloc(strlen(string1) + strlen(string2) + 1);
-
+    
     strcpy(result, string1);
     strcat(result, string2);
 

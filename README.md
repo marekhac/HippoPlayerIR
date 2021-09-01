@@ -24,6 +24,14 @@ You will be able to...
 * rew/ffwd pattern of the module
 * <span style="color:red">NEW!</span> copy selected module to LikedMods: volume
 
+### IMPORTANT NOTE:
+
+Since version 1.4, HippoPlayerIR requires "new" version of HippoPlayer (at
+least 2.47). If you don't want to update HippoPlayer, you can still
+use ver. 1.3 of HippoPlayerIR (you can find it "Releases"
+section). But I stringly encourage you to download latest version of
+HippoPlayer. It has a lot of fancy features! :)
+
 ### Gathering the parts
 
 * Arduino Nano ATMEGA328P

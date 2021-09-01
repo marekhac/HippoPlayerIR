@@ -1,5 +1,12 @@
 # Changelog
 
+
+### [1.4] - 2021-09-01
+#### What's new
+- Full synchronization with HippoPlayer! Now you can use both Amiga keyboard and
+remote conntroller to control HippoPlayer (without losing consistency).
+- Improved reaction time for remote controller commands
+
 ### [1.3] - 2020-11-22
 #### Added
 - Async serial port communication

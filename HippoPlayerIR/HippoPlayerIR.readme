@@ -2,15 +2,28 @@ Short:        Wirelessly controlled HippoPlayer (using IR remote controller and 
 Author:       Marek Hac <fuego@go2.pl>
 Uploader:     fuego@go2.pl
 Type:         docs/hard
-Version:      1.3
+Version:      1.4
 Architecture: m68k-amigaos >= 2.0
 
-In this simple project you will learn how to connect wireless IR receiver with 
-Amiga and how to control HippoPlayer while listening to music modules.
+Connect Arduino Uno with wireless IR receiver to Amiga and remotly control HippoPlayer while listening to music modules.
 
 More information at: https://github.com/marekhac/HippoPlayerIR
 
+IMPORTANT NOTE:
+
+Since version 1.4, HippoPlayerIR requires "new" version of HippoPlayer (at
+least 2.47). If you don't want to update HippoPlayer, you can still
+use ver. 1.3 of HippoPlayerIR (you can find it on my github page in "Releases"
+section). But I stringly encourage you to download latest version of
+HippoPlayer. It has a lot of fancy features! :)
+
 CHANGELOG:
+
+[1.4] - 2021-09-01
+What's new
+- Full synchronization with HippoPlayer! Now you can use both Amiga keyboard and
+remote conntroller to control HippoPlayer (without losing consistency).
+- Improved reaction time for remote controller commands
 
 [1.3] - 2020-11-22
 Added

@@ -1,5 +1,5 @@
 # HippoPlayerIR
-<sub>Copyright © 2021 by MARXSOFT Marek Hać</sub>
+<sub>Copyright © 2022 by MARXSOFT Marek Hać</sub>
 
 ### Introduction
 Does anybody need a remote controlled Amiga computer these days? Not at all, so... let’s do it! :). 
@@ -22,7 +22,9 @@ You will be able to...
 * show/hide sample window
 * stop/continue playing module
 * rew/ffwd pattern of the module
-* <span style="color:red">NEW!</span> copy selected module to LikedMods: volume
+* copy selected module to LikedMods: volume
+* <span style="color:red">NEW!</span> set/unset modules as favorite
+* <span style="color:red">NEW!</span> toggle between different playlists (regular, favorite modules, file browser)
 
 ### IMPORTANT NOTE:
 
@@ -137,6 +139,9 @@ Here is a quick overview of all possible actions that can be performed on HippoP
 * **ffwdPattern** - play next pattern of the module
 * **quitProgram** - quit the HippoPlayerIR and stop listening for IRCodes on serial port 
 * **copyToLikedMods** - copy selected module to LikedMods: volume. LikedMods is just an assign to a directory in which you can store your favourite modules
+* **toggleFavorite** - set/unset current module as favorite
+* **togglePlaylist** - toggle between different playlists (regular, favorite modules, file browser)
+
 
 To map buttons on your remote controller you have to discover IR Key Codes behind them. I assume that you already have wired everything up, and the Arduino is successfully programmed. Now, connect Arduino to the Amiga using DB25 plug. Power on the Arduino (order matters!). Power on your Amiga, open CLI window and execute HippoPlayerIR with **-monitor** option.
 
@@ -175,6 +180,8 @@ rewPattern:807f8a75
 ffwdPattern:807f0af5
 quitProgram:807f02fd
 copyToLikedMods:807f8f70
+toggleFavorite:807ff00f
+togglePlaylist:807f8877
 ```
 
 Save **HippoPlayerIR.config** and we are good to go. To verify configuration open HippoPlayerIR in debug mode (with option **-debug**)

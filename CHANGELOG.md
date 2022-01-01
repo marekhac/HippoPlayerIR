@@ -1,5 +1,10 @@
 # Changelog
 
+### [1.5] - 2022-01-02
+#### What's new
+- Add new actions:
+	- Set/unset favorite module
+	- Toggle playlist (between regular, favorite modules, file browser) 
 
 ### [1.4] - 2021-09-01
 #### What's new

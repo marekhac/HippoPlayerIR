@@ -1,6 +1,6 @@
 # Changelog
 
-### [1.5] - 2022-01-02
+### [1.5] - 2022-01-10
 #### What's new
 - Add new actions:
 	- Set/unset favorite module

@@ -1,8 +1,8 @@
 //
 //  HippoPlayerIR
 //
-//  Created by Marek Hac on 20/12/2021.
-//  Copyright © 2021 MARXSOFT Marek Hac. All rights reserved.
+//  Created by Marek Hac on 10/01/2022.
+//  Copyright © 2022 MARXSOFT Marek Hac. All rights reserved.
 //  https://github.com/marekhac
 //
 //  Compile info:
@@ -192,7 +192,7 @@ int main(UWORD argc, char* argv[])
 void displayHeaderInfo()
 {
     printf("\nHippoPlayerIR Version 1.5\n");
-    printf("Copyright © 2021 by MARXSOFT Marek Hac\n");
+    printf("Copyright © 2022 by MARXSOFT Marek Hac\n");
     printf("Press CTRL-D to exit\n\n");
 }
 

@@ -1,8 +1,8 @@
 //
 //  HippoPlayerIR
 //
-//  Created by Marek Hac on 23/08/2021.
-//  Copyright © 2021 MARXSOFT Marek Hac. All rights reserved.
+//  Created by Marek Hac on 10/01/2022.
+//  Copyright © 2022 MARXSOFT Marek Hac. All rights reserved.
 //  https://github.com/marekhac
 //
 //  Compile info:
@@ -24,7 +24,7 @@ struct MsgPort *SerialMP;   /* pointer to Message Port*/
 
 #define BUFFER_SIZE 32
 #define MAX_COMMAND_LENGTH 32
-#define NUM_OF_ACTIONS 16
+#define NUM_OF_ACTIONS 18
 #define FAIL_TO_LOAD_CONFIG 1
 
 // serial port params
@@ -45,7 +45,7 @@ struct MsgPort *SerialMP;   /* pointer to Message Port*/
 
 // version
 
-static UBYTE *version = "$VER: HippoPlayerIR 1.4";
+static UBYTE *version = "$VER: HippoPlayerIR 1.5";
 
 // enums
 
@@ -64,6 +64,8 @@ enum ActionType {
     JUMP_10_MODS_FORWARD,
     JUMP_10_MODS_BACKWARDS,
     COPY_TO_LIKEDMODS,
+    TOGGLE_FAVORITE,
+    TOGGLE_PLAYLIST,
     QUIT
 };
 
@@ -189,14 +191,14 @@ int main(UWORD argc, char* argv[])
 
 void displayHeaderInfo()
 {
-    printf("\nHippoPlayerIR Version 1.4\n");
-    printf("Copyright © 2021 by MARXSOFT Marek Hac\n");
+    printf("\nHippoPlayerIR Version 1.5\n");
+    printf("Copyright © 2022 by MARXSOFT Marek Hac\n");
     printf("Press CTRL-D to exit\n\n");
 }
 
 void printQuitMessage()
 {
-	 ACTION_MSG("Quit Program\nThanks for using HippoPlayerIR :)\n\n");
+    ACTION_MSG("Quit Program\nThanks for using HippoPlayerIR :)\n\n");
 }
 
 void processCommandLineArgs(UWORD argc, char* argv[])
@@ -292,6 +294,8 @@ void createActionNamesArray(UBYTE* actionNames[])
     actionNames[JUMP_10_MODS_FORWARD] = "10ModsForward";
     actionNames[JUMP_10_MODS_BACKWARDS] = "10ModsBackwards";
     actionNames[COPY_TO_LIKEDMODS] = "copyToLikedMods";
+    actionNames[TOGGLE_FAVORITE] = "toggleFavorite";
+    actionNames[TOGGLE_PLAYLIST] = "togglePlaylist";
 }
 
 enum ActionType getActionType(UBYTE *name, UBYTE* actionNames[])
@@ -386,8 +390,11 @@ void runScriptForType(enum ActionType type)
     UBYTE *pauseScript = "pause.HiP";
     UBYTE *volumeUpScript = "volumeUp.HiP";
     UBYTE *volumeDownScript = "volumeDown.HiP";
+    UBYTE *toggleFavoriteScript = "toggleFavorite.HiP";
+    UBYTE *togglePlaylistScript = "togglePlaylist.HiP";
+
     ULONG result;
-    
+
     switch(type)
     {
         case VOL_DOWN_ACTION:
@@ -460,6 +467,16 @@ void runScriptForType(enum ActionType type)
             executeArexxScript(copyToLikedModsScript, "Copy module to LikedMods: volume");
             break;
         }
+        case TOGGLE_FAVORITE:
+        {
+            executeArexxScript(toggleFavoriteScript, "Set/unset as favorite module");
+            break;
+        }
+        case TOGGLE_PLAYLIST:
+        {
+            executeArexxScript(togglePlaylistScript, "Toggle playlist");
+            break;
+        }
         case QUIT:
         {
             break;
@@ -470,7 +487,7 @@ void runScriptForType(enum ActionType type)
 UBYTE* concat(const UBYTE *string1, const UBYTE *string2)
 {
     UBYTE *result = (UBYTE *) malloc(strlen(string1) + strlen(string2) + 1);
-    
+
     strcpy(result, string1);
     strcat(result, string2);
 

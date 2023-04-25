@@ -1,8 +1,8 @@
 //
 //  HippoPlayerIR
 //
-//  Created by Marek Hac on 10/01/2022.
-//  Copyright © 2022 MARXSOFT Marek Hac. All rights reserved.
+//  Created by Marek Hac on 23/04/2023.
+//  Copyright © 2023 MARXSOFT Marek Hac. All rights reserved.
 //  https://github.com/marekhac
 //
 //  Compile info:
@@ -17,10 +17,13 @@
 #include <dos/dos.h>
 #include <dos/dostags.h>
 #include <devices/serial.h>
-#include <intuition/intuition.h>
 
-struct IOExtSer *SerialIO;   /* pointer to I/O request */
-struct MsgPort *SerialMP;   /* pointer to Message Port*/
+struct MsgPort *SerialMP;   /* pointer to Message Port */
+struct IOExtSer *SerialIO;  /* pointer to I/O request */
+struct IOTArray Terminators =
+{
+    0x00  /* EOF character */
+};
 
 #define BUFFER_SIZE 32
 #define MAX_COMMAND_LENGTH 32
@@ -45,7 +48,7 @@ struct MsgPort *SerialMP;   /* pointer to Message Port*/
 
 // version
 
-static UBYTE *version = "$VER: HippoPlayerIR 1.5";
+static UBYTE *version = "$VER: HippoPlayerIR 1.6";
 
 // enums
 
@@ -82,6 +85,7 @@ void printQuitMessage();
 void executeCommand(UBYTE *scriptFileName, UBYTE *message);
 void runScriptForType(enum ActionType);
 void setupCustomSerialParams();
+void sendWriteCommand();
 void setupReadCommand();
 ULONG loadConfiguration(struct Action*);
 LONG doCommand(UBYTE *command, BPTR other);
@@ -125,6 +129,7 @@ int main(UWORD argc, char* argv[])
             else
             {
                 setupCustomSerialParams();
+                sendWriteCommand(); /* send "wake up" signal to Arduino */
                 setupReadCommand();
 
                 SendIO(SerialIO);
@@ -191,8 +196,8 @@ int main(UWORD argc, char* argv[])
 
 void displayHeaderInfo()
 {
-    printf("\nHippoPlayerIR Version 1.5\n");
-    printf("Copyright © 2022 by MARXSOFT Marek Hac\n");
+    printf("\nHippoPlayerIR Version 1.6\n");
+    printf("Copyright © 2023 by MARXSOFT Marek Hac\n");
     printf("Press CTRL-D to exit\n\n");
 }
 
@@ -248,8 +253,11 @@ void setupCustomSerialParams()
     SerialIO->io_ReadLen = READ_LENGTH;
     SerialIO->io_WriteLen = WRITE_LENGTH;
     SerialIO->io_StopBits = STOP_BITS;
-    SerialIO->io_SerFlags &= ~SERF_PARTY_ON; // set parity off
-    SerialIO->io_SerFlags |= SERF_XDISABLED; // set xON/xOFF disabled
+
+    // stop receving data when termination character appear in stream
+
+    SerialIO->io_SerFlags = SERF_EOFMODE;
+    SerialIO->io_TermArray = Terminators;
 
     // update serial parameters using SDCMD_SETPARAMS command
 
@@ -258,6 +266,17 @@ void setupCustomSerialParams()
     if (DoIO(SerialIO))
     {
         printf("Error setting serial parameters!\n");
+    }
+}
+
+void sendWriteCommand()
+{
+    SerialIO->IOSer.io_Command  = CMD_WRITE;
+    SerialIO->IOSer.io_Length = -1;
+    SerialIO->IOSer.io_Data = (APTR)"WakeUp";
+    if (DoIO(SerialIO))
+    {
+        printf("Error while sending CMD_WRITE command\n");
     }
 }
 

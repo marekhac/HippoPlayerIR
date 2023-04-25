@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6] - 2023-04-26
+#### What's new
+- Introduced step-down converter to power up Arduino using serial port (be ECO - save cables!)
+- Improved app initialization. Now you don't need to switch on HippoPlayerIR before switching on Amiga (if you still using external power)
+- Removed unnecessary script file executed by IconX
+- Fixed wrong I/O request length for serial read operation
+
 ### [1.5] - 2022-01-10
 #### What's new
 - Add new actions:

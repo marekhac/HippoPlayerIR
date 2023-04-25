@@ -1,5 +1,5 @@
 # HippoPlayerIR
-<sub>Copyright © 2022 by MARXSOFT Marek Hać</sub>
+<sub>Copyright © 2023 by MARXSOFT Marek Hać</sub>
 
 ### Introduction
 Does anybody need a remote controlled Amiga computer these days? Not at all, so... let’s do it! :). 
@@ -23,8 +23,8 @@ You will be able to...
 * stop/continue playing module
 * rew/ffwd pattern of the module
 * copy selected module to LikedMods: volume
-* <span style="color:red">NEW!</span> set/unset modules as favorite
-* <span style="color:red">NEW!</span> toggle between different playlists (regular, favorite modules, file browser)
+* set/unset modules as favorite
+* toggle between different playlists (regular, favorite modules, file browser)
 
 ### IMPORTANT NOTE:
 
@@ -38,6 +38,7 @@ HippoPlayer. It has a lot of fancy features! :)
 
 * Arduino Nano ATMEGA328P
 * Mini RS232 MAX3232 Level to TTL Converter 
+* Step-down converter - f.e. Mini 360 DC-DC Adjustable Buck Converter (optional)
 * Wireless IR Receiver Module (KY-022)
 * IR Remote Controller (the one taken from cheap Android TV would be perfect)
 * DB25 female plug
@@ -47,7 +48,7 @@ HippoPlayer. It has a lot of fancy features! :)
 
 * Amiga with OS version 2.0 or higher
 * RexxMast (tested with version 1.15). It’s a good idea to place it in WBStartup
-* HippoPlayer (tested with latest version 2.45)
+* HippoPlayer (tested with latest version)
 * HippoPlayerIR
 
 ### How it works
@@ -75,11 +76,24 @@ So basically there are two things we need to deal with:
 
 It looks like the Arduino and Amiga talks with completely different languages. To convert signals from TTL to RS232 standard, we will use MAX3232 chip module. This way Arduino will be able to send data to Amiga serial port, and Amiga will be able to understand the language in which Arduino is talking to her. On the other hand, if Amiga would like to say something to Arduino, she will not immediately smash Arduino’s serial pins (what a tough girl ;). OK, so let’s wire Arduino via MAX3232 module with DB25 female plug.
 
-![how it works](./img/scheme.png)
-
 After we setup a healthy partnership between Arduino and Amiga, we need to connect the Wireless IR Receiver Module with Arduino. It’s powered by +5V (taken from Arduino board), and send IR modulated signals by “S” pin connected with D7 pin on Arduino board.
 
-Generally (from the hardware point of view) this is it. Arduino can be powered by build-in mini-b usb connector or by external power source (connected to +5V and GND). You can now upload...
+#### Powering options
+
+Arduino can be powered by:
+
+* build-in mini-b usb connector 
+* external power source (connected to +5V and GND) 
+
+![how it works](./img/scheme.png)
+
+* you can also take power directly from Amiga's serial port. Unfortunately there's no +5V on serial port, but luckly there is +12V on pin 9 and GND on pin 7. It's not hard to reduce voltage to +5V. You can use voltage stabilizer or step-down converter. I prefer second solution. Mini 360 DC-DC Adjustable Buck Converter would be perfect. Just adjust voltage to about +5.20V on OUT+ pin and connect it to VIN on Arduino board. Of course don't forget to connect OUT- to GND too. Here's how all of it can be wired up.  
+
+![how it works](./img/scheme_stepdown.png)
+
+>**TIP:** Step-down converter can be easily hidden in the serial cable plug 
+
+Generally (from the hardware point of view) this is it. You can now upload...
 
 ### Arduino code
 
@@ -229,9 +243,11 @@ A: It can mean that HippoPlayer wasn’t executed or ARexx port wasn’t properl
 * **K-P Koljonen** - for creating the best music player for Amiga.
 * **Nils Goers** - for arexx scripts for PlayNext and PlayPrev actions.
 * **Bruno Jennrich** - for his great book called "Advanced System Programmer's Guide for the Amiga". It gave me a lot of useful informations about serial communication on Amiga.
-* **Bartłomiej Węgrzyn (Magnetic Fox)** - for late night coding session of HippoPlayerIR @ AmiPartyXXV. 
+* **Bartłomiej Węgrzyn (Magnetic-Fox)** - for late night coding session of HippoPlayerIR @ AmiPartyXXV. 
 * **Michał Żukowski (Rzookol)** - for tips about proper serial port setup
 * **Mingo12** - for notes about remote controllers compatibility and issues with Wireless IR Receiver Module.
+* ***y** - resolving tricky issue with serial transmission initialization
+* **Hexmage960** - for pointing bug in I/O request lenght 
  
 ### License
 

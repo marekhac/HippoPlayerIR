@@ -87,7 +87,7 @@ Arduino can be powered by:
 
 ![how it works](./img/scheme.png)
 
-* you can also take power directly from Amiga's serial port. Unfortunately there's no +5V on serial port, but luckly there is +12V on pin 9 and GND on pin 7. It's not hard to reduce voltage to +5V. You can use voltage stabilizer or step-down converter. I prefer second solution. Mini 360 DC-DC Adjustable Buck Converter would be perfect. Just adjust voltage to about +5.20V on OUT+ pin and connect it to VIN on Arduino board. Of course don't forget to connect OUT- to GND too. Here's how all of it can be wired up.  
+* you can also take power directly from Amiga's serial port. Unfortunately there's no +5V on serial port, but luckly there is +12V on pin 9 and GND on pin 7. It's not hard to reduce voltage to +5V. You can use voltage stabilizer or step-down converter. I prefer second solution. Mini 360 DC-DC Adjustable Buck Converter would be perfect. Just adjust voltage to +5V on OUT+ pin and connect it to VIN on Arduino board. Of course don't forget to connect OUT- to GND too. Here's how all of it can be wired up.  
 
 ![how it works](./img/scheme_stepdown.png)
 

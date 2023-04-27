@@ -234,6 +234,10 @@ A: Not all remote controllers works with cheap Wireless IR Receiver Module for A
 
 A: Check if you wire up properly the Arduino and Wireless IR Receiver Module. Check if it's properly powered up (with +5V from Arduino). It also can be damaged, so replace it with another one.
 
+**Q: Got “rx: Unknown command” error**
+
+A: HippoPlayerIR couldn't find "rx" program to run Arexx scripts. Add "Sys:Rexxc" to Path in your startup-sequence (if it wasn't already added) or just copy "rx" file from "Sys:Rexxc" to "C" folder. 
+
 **Q: Got “Command returned 5/1: Program not found” error**
 
 A: It can mean that HippoPlayer wasn’t executed or ARexx port wasn’t properly initialized (did you run RexxMast first?).
